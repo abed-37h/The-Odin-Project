@@ -98,8 +98,45 @@ class TicTacToeGame
   end
 
   def display
-    puts "#{@player1.name}: #{@player1.mark}\t"\
-         "#{@player2.name}: #{@player2.mark}"
+    puts @turn ?
+      "#{@player1.name}: #{@player1.mark}" :
+      "#{@player2.name}: #{@player2.mark}"
     puts @board
   end
+end
+
+stop_game = false
+until stop_game
+  print "Player1: "
+  player1_name = gets.chomp
+
+  print "Player2: "
+  player2_name = gets.chomp
+
+  puts "[1] #{player1_name}: X\t#{player2_name}: O"
+  puts "[0] #{player1_name}: O\t#{player2_name}: X"
+  print "Choose combination: "
+  xo = gets.chomp.to_i == 0 ? false : true
+
+  game = TicTacToeGame.new(player1_name, player2_name, xo)
+
+  loop do
+    game.display
+
+    print 'Position: '
+    position = gets.chomp.to_i
+
+    result = game.move(position)
+    unless result
+      puts "Invalid position: #{position}. Play again.\n\n"
+      next
+    end
+
+    puts "#{result}\n\n"
+
+    break if result.end_with?('wins.') || result == 'Draw'
+  end
+
+  print "Play again? [1: Yes, 0: No] "
+  stop_game = gets.chomp.to_i == 1 ? false : true
 end
