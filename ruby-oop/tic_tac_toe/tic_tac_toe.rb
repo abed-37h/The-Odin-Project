@@ -30,11 +30,13 @@ class Board
 
     @board[position - 1] = mark
 
-    win_move?(position) ? 'win' : 'ongoing'
-  end
-
-  def full?
-    @board.all? { |mark| mark == 'O' || mark == 'X' }
+    if win_move?(position)
+      'Win'
+    elsif full?
+      'Draw'
+    else
+      'Ongoing...'
+    end
   end
 
   def to_s
@@ -47,6 +49,10 @@ class Board
 
   private
 
+  def full?
+    @board.all? { |mark| mark == 'O' || mark == 'X' }
+  end
+
   def win_move?(position)
     x = (position - 1) / 3
     y = (position - 1) % 3
@@ -56,9 +62,44 @@ class Board
     return true if @board[y] == @board[y + 3] && @board[y] == @board[y + 6]
 
     return true if x == y && @board[0] == @board[4] && @board[4] == @board[8]
-    
+
     return true if x + y == 2 && @board[2] == @board[4] && @board[4] == @board[6]
 
     false
+  end
+end
+
+class TicTacToeGame
+  def initialize(player1_name, player2_name, xo)
+    if xo
+      @player1 = Player.new(player1_name, 'X')
+      @player2 = Player.new(player2_name, 'O')
+      @turn = true
+    else
+      @player1 = Player.new(player1_name, 'O')
+      @player2 = Player.new(player2_name, 'X')
+      @turn = false
+    end
+    @board = Board.new
+  end
+
+  def move(position)
+    current_player = @turn ? @player1 : @player2
+
+    @turn = !@turn
+
+    result = @board.move(position, current_player.mark)
+
+    if result == 'Win'
+       "Hooray! #{current_player.name} wins."
+    else
+      result
+    end
+  end
+
+  def display
+    puts "#{@player1.name}: #{@player1.mark}\t"\
+         "#{@player2.name}: #{@player2.mark}"
+    puts @board
   end
 end
